@@ -1582,4 +1582,4 @@ async function validateBookingAndLine(bookingInput, hangTauInput) {
         
         return rowBooking === cleanBooking && rowHangTau === cleanHangTau;
     });
-}
+}}
