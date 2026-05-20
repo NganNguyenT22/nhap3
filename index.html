@@ -483,6 +483,10 @@
             <div class="modal-body">
                 <form id="eirForm" class="row g-3">
                     <input type="hidden" id="eir_rowIndex">
+					<div class="col-md-6">
+    					<label class="form-label small fw-bold text-primary">Số Booking</label>
+   						 <input type="text" class="form-control fw-bold text-uppercase" id="eir_booking" placeholder="Nhập số Booking..." required>
+					</div>
                     <div class="col-md-6">
                         <label class="form-label small fw-bold">Hãng tàu</label>
                         <input type="text" class="form-control" id="eir_hangtau" required>
@@ -694,7 +698,10 @@
             <div class="modal-body">
                 <form id="eirCapForm" class="row g-3">
                     <input type="hidden" id="eirCap_rowIndex">
-                    
+                    <div class="col-md-6">
+    					<label class="form-label small fw-bold text-primary">Số Booking</label>
+    					<input type="text" class="form-control fw-bold text-uppercase" id="eirCap_booking" placeholder="Nhập số Booking..." required>
+					</div>
                     <div class="col-md-6">
                         <label class="form-label small fw-bold">Mã Container</label>
                         <input type="text" class="form-control fw-bold text-uppercase" id="eirCap_macont" placeholder="Nhập mã cont để tự tra tồn bãi..." required onchange="autoFillFromHold(this.value)">
