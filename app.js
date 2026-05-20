@@ -600,19 +600,17 @@ function openEirModal(mode, rowIndex = null) {
 async function saveEirData() {
     const rowIndex = document.getElementById('eir_rowIndex').value;
     
-    // 1. KIỂM TRA ĐỐI CHIẾU BOOKING & HÃNG TÀU
+    // 1. LẤY SỐ BOOKING VÀ KIỂM TRA TRƯỚC KHI LƯU
     const bookingGhiNhan = document.getElementById('eir_booking').value.trim();
-    const hangTauGhiNhan = document.getElementById('eir_hangtau').value.trim();
-
-    if (!bookingGhiNhan || !hangTauGhiNhan) {
-        alert("Vui lòng nhập đầy đủ Số Booking và Hãng tàu để đối chiếu!");
+    if (!bookingGhiNhan) {
+        alert("Vui lòng nhập số Booking!");
         return;
     }
 
-    const isHopLe = await validateBookingAndLine(bookingGhiNhan, hangTauGhiNhan);
-    if (!isHopLe) {
-        alert("Nhập sai! Số Booking hoặc Hãng tàu không khớp với dữ liệu QL. Lệnh đã cấp.");
-        return; // Dừng việc lưu dữ liệu
+    const isBookingDung = await checkBookingHopLe(bookingGhiNhan);
+    if (!isBookingDung) {
+        alert("Nhập sai! Số Booking không tồn tại trong hệ thống QL. Lệnh.");
+        return; // Chặn lưu dữ liệu
     }
 
     //ktra booking
@@ -854,19 +852,17 @@ function openEirCapModal(mode, rowIndex = null) {
 // Lưu phiếu Cấp Rỗng về Google Sheets
 async function saveEirCapData() {
     const rowIndex = document.getElementById('eirCap_rowIndex').value;
-    // 1. KIỂM TRA ĐỐI CHIẾU BOOKING & HÃNG TÀU
+    // 1. LẤY SỐ BOOKING VÀ KIỂM TRA TRƯỚC KHI LƯU
     const bookingGhiNhan = document.getElementById('eirCap_booking').value.trim();
-    const hangTauGhiNhan = document.getElementById('eirCap_hangtau').value.trim();
-
-    if (!bookingGhiNhan || !hangTauGhiNhan) {
-        alert("Vui lòng nhập đầy đủ Số Booking và Hãng tàu để đối chiếu!");
+    if (!bookingGhiNhan) {
+        alert("Vui lòng nhập số Booking!");
         return;
     }
 
-    const isHopLe = await validateBookingAndLine(bookingGhiNhan, hangTauGhiNhan);
-    if (!isHopLe) {
-        alert("Nhập sai! Số Booking hoặc Hãng tàu không khớp với dữ liệu QL. Lệnh đã cấp.");
-        return; // Dừng việc lưu dữ liệu
+    const isBookingDung = await checkBookingHopLe(bookingGhiNhan);
+    if (!isBookingDung) {
+        alert("Nhập sai! Số Booking không tồn tại trong hệ thống QL. Lệnh.");
+        return; // Chặn lưu dữ liệu
     }
     //ktra số booking
     const rowValues = [
@@ -1554,14 +1550,12 @@ function renderSuaChuaPage() {
     });
 }
 //==========Giam dinh
-// HÀM KIỂM TRA ĐỒNG THỜI SỐ BOOKING VÀ HÃNG TÀU
-async function validateBookingAndLine(bookingInput, hangTauInput) {
-    if (!bookingInput || !hangTauInput) return false;
+// HÀM KIỂM TRA BOOKING TỒN TẠI TRONG QL. LỆNH
+async function checkBookingHopLe(bookingInput) {
+    if (!bookingInput) return false;
+    const cleanInput = bookingInput.trim().toLowerCase();
 
-    const cleanBooking = bookingInput.trim().toLowerCase();
-    const cleanHangTau = hangTauInput.trim().toLowerCase();
-
-    // Lấy dữ liệu QL. Lệnh nếu hệ thống chưa nạp
+    // Nếu mảng dữ liệu Lệnh (globalDataLenh) đang rỗng, tự động fetch từ Sheets về
     if (!window.globalDataLenh || window.globalDataLenh.length === 0) {
         try {
             showLoading(true);
@@ -1575,11 +1569,9 @@ async function validateBookingAndLine(bookingInput, hangTauInput) {
         }
     }
 
-    // Quét đối chiếu xem có dòng nào khớp CẢ Booking ID VÀ Hãng tàu không
+    // Quét đối chiếu với cột Booking ID từ QL. Lệnh
     return window.globalDataLenh.some(row => {
-        const rowBooking = (row["Booking ID"] || row["Booking id"] || row["Booking ID "] || '').toString().trim().toLowerCase();
-        const rowHangTau = (row["Hãng tàu"] || row["Hãng Tàu"] || '').toString().trim().toLowerCase();
-        
-        return rowBooking === cleanBooking && rowHangTau === cleanHangTau;
+        const idRaw = row["Booking ID"] || row["Booking id"] || row["Booking ID "] || '';
+        return idRaw.toString().trim().toLowerCase() === cleanInput;
     });
-}}
+}
