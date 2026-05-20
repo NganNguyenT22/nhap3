@@ -646,8 +646,9 @@ async function saveEirData() {
         eirModal.hide();
         setTimeout(() => {
             alert("Lưu phiếu EIR Hạ Rỗng thành công!");
-            loadGiaoNhanData('HaRong');
-        }, 1200);
+            switchGiaoNhanTab('HaRong'); // Gọi đúng tên hàm để tải lại dữ liệu bảng
+            showLoading(false); // Đảm bảo chắc chắn vòng quay bị tắt
+        }, 500); // Giảm thời gian chờ từ 1200ms xuống 500ms cho người dùng đỡ đợi
     } catch(e) {
         alert("Lỗi kết nối khi lưu phiếu EIR!");
         showLoading(false);
