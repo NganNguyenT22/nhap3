@@ -599,18 +599,24 @@ function openEirModal(mode, rowIndex = null) {
 
 async function saveEirData() {
     const rowIndex = document.getElementById('eir_rowIndex').value;
-    // 1. LẤY SỐ BOOKING VÀ KIỂM TRA TRƯỚC KHI LƯU
+   async function saveEirData() {
+    const rowIndex = document.getElementById('eir_rowIndex').value;
+    
+    // 1. KIỂM TRA ĐỐI CHIẾU BOOKING & HÃNG TÀU
     const bookingGhiNhan = document.getElementById('eir_booking').value.trim();
-    if (!bookingGhiNhan) {
-        alert("Vui lòng nhập số Booking!");
+    const hangTauGhiNhan = document.getElementById('eir_hangtau').value.trim();
+
+    if (!bookingGhiNhan || !hangTauGhiNhan) {
+        alert("Vui lòng nhập đầy đủ Số Booking và Hãng tàu để đối chiếu!");
         return;
     }
 
-    const isBookingDung = await checkBookingHopLe(bookingGhiNhan);
-    if (!isBookingDung) {
-        alert("Nhập sai! Số Booking không tồn tại trong hệ thống QL. Lệnh.");
-        return; // Chặn lưu dữ liệu
+    const isHopLe = await validateBookingAndLine(bookingGhiNhan, hangTauGhiNhan);
+    if (!isHopLe) {
+        alert("Nhập sai! Số Booking hoặc Hãng tàu không khớp với dữ liệu QL. Lệnh đã cấp.");
+        return; // Dừng việc lưu dữ liệu
     }
+
     //ktra booking
     // Mảng dữ liệu bốc từ form xếp đúng thứ tự cột tiêu đề của Google Sheets
     const rowData = [
@@ -850,17 +856,19 @@ function openEirCapModal(mode, rowIndex = null) {
 // Lưu phiếu Cấp Rỗng về Google Sheets
 async function saveEirCapData() {
     const rowIndex = document.getElementById('eirCap_rowIndex').value;
-    // 1. LẤY SỐ BOOKING VÀ KIỂM TRA TRƯỚC KHI LƯU
+    // 1. KIỂM TRA ĐỐI CHIẾU BOOKING & HÃNG TÀU
     const bookingGhiNhan = document.getElementById('eirCap_booking').value.trim();
-    if (!bookingGhiNhan) {
-        alert("Vui lòng nhập số Booking!");
+    const hangTauGhiNhan = document.getElementById('eirCap_hangtau').value.trim();
+
+    if (!bookingGhiNhan || !hangTauGhiNhan) {
+        alert("Vui lòng nhập đầy đủ Số Booking và Hãng tàu để đối chiếu!");
         return;
     }
 
-    const isBookingDung = await checkBookingHopLe(bookingGhiNhan);
-    if (!isBookingDung) {
-        alert("Nhập sai! Số Booking không tồn tại trong hệ thống QL. Lệnh.");
-        return; // Chặn lưu dữ liệu
+    const isHopLe = await validateBookingAndLine(bookingGhiNhan, hangTauGhiNhan);
+    if (!isHopLe) {
+        alert("Nhập sai! Số Booking hoặc Hãng tàu không khớp với dữ liệu QL. Lệnh đã cấp.");
+        return; // Dừng việc lưu dữ liệu
     }
     //ktra số booking
     const rowValues = [
@@ -1548,12 +1556,14 @@ function renderSuaChuaPage() {
     });
 }
 //==========Giam dinh
-// HÀM KIỂM TRA BOOKING TỒN TẠI TRONG QL. LỆNH
-async function checkBookingHopLe(bookingInput) {
-    if (!bookingInput) return false;
-    const cleanInput = bookingInput.trim().toLowerCase();
+// HÀM KIỂM TRA ĐỒNG THỜI SỐ BOOKING VÀ HÃNG TÀU
+async function validateBookingAndLine(bookingInput, hangTauInput) {
+    if (!bookingInput || !hangTauInput) return false;
 
-    // Nếu mảng dữ liệu Lệnh (globalDataLenh) đang rỗng, tự động fetch từ Sheets về
+    const cleanBooking = bookingInput.trim().toLowerCase();
+    const cleanHangTau = hangTauInput.trim().toLowerCase();
+
+    // Lấy dữ liệu QL. Lệnh nếu hệ thống chưa nạp
     if (!window.globalDataLenh || window.globalDataLenh.length === 0) {
         try {
             showLoading(true);
@@ -1567,9 +1577,11 @@ async function checkBookingHopLe(bookingInput) {
         }
     }
 
-    // Quét đối chiếu với cột Booking ID từ QL. Lệnh
+    // Quét đối chiếu xem có dòng nào khớp CẢ Booking ID VÀ Hãng tàu không
     return window.globalDataLenh.some(row => {
-        const idRaw = row["Booking ID"] || row["Booking id"] || row["Booking ID "] || '';
-        return idRaw.toString().trim().toLowerCase() === cleanInput;
+        const rowBooking = (row["Booking ID"] || row["Booking id"] || row["Booking ID "] || '').toString().trim().toLowerCase();
+        const rowHangTau = (row["Hãng tàu"] || row["Hãng Tàu"] || '').toString().trim().toLowerCase();
+        
+        return rowBooking === cleanBooking && rowHangTau === cleanHangTau;
     });
 }
