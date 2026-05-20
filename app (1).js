@@ -581,7 +581,7 @@ function openEirModal(mode, rowIndex = null) {
         if(rowData) {
             document.getElementById('eir_hangtau').value = rowData["Hãng tàu"] || rowData["Hãng Tàu"] || "";
             document.getElementById('eir_macont').value = rowData["Mã container"] || rowData["Mã Container"] || "";
-            document.getElementById('eir_size').value = rowData["Size"] || "20DC";
+            document.getElementById('eir_size').value = rowData["Size"] || "2200";
             document.getElementById('eir_bienso').value = rowData["Biển số xe"] || "";
             document.getElementById('eir_khachhang').value = rowData["Khách hàng"] || "";
             document.getElementById('eir_trangthai').value = rowData["Trạng thái"] || "A";
