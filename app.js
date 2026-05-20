@@ -645,6 +645,17 @@ async function saveEirData() {
     showLoading(true);
     try {
         await fetch(API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify(payload) });
+        // 1. Tự thêm dòng vừa lưu vào mảng dữ liệu đang hiển thị trên web
+        const newRow = {
+            "Mã container": document.getElementById('eir_macont').value.trim().toUpperCase(),
+            "Size": document.getElementById('eir_size').value,
+            "Hãng tàu": document.getElementById('eir_hangtau').value.trim(),
+            "Trạng thái": document.getElementById('eir_trangthai').value,
+            "rowIndex": "New" // Đánh dấu tạm
+        };
+        window.globalHaRongData.unshift(newRow); // Thêm vào đầu bảng
+        renderTableHaRong(window.globalHaRongData); // Vẽ lại bảng ngay
+      
         eirModal.hide();
         setTimeout(() => {
             alert("Lưu phiếu EIR Hạ Rỗng thành công!");
