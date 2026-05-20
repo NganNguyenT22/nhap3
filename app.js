@@ -1555,7 +1555,6 @@ async function checkBookingHopLe(bookingInput) {
     if (!bookingInput) return false;
     const cleanInput = bookingInput.trim().toLowerCase();
 
-    // Nếu mảng dữ liệu Lệnh (globalDataLenh) đang rỗng, tự động fetch từ Sheets về
     if (!window.globalDataLenh || window.globalDataLenh.length === 0) {
         try {
             showLoading(true);
@@ -1569,7 +1568,6 @@ async function checkBookingHopLe(bookingInput) {
         }
     }
 
-    // Quét đối chiếu với cột Booking ID từ QL. Lệnh
     return window.globalDataLenh.some(row => {
         const idRaw = row["Booking ID"] || row["Booking id"] || row["Booking ID "] || '';
         return idRaw.toString().trim().toLowerCase() === cleanInput;
