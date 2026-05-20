@@ -1523,3 +1523,28 @@ function renderSuaChuaPage() {
     });
 }
 //==========Giam dinh
+// HÀM KIỂM TRA BOOKING TỒN TẠI TRONG QL. LỆNH
+async function checkBookingHopLe(bookingInput) {
+    if (!bookingInput) return false;
+    const cleanInput = bookingInput.trim().toLowerCase();
+
+    // Nếu mảng dữ liệu Lệnh (globalDataLenh) đang rỗng, tự động fetch từ Sheets về
+    if (!window.globalDataLenh || window.globalDataLenh.length === 0) {
+        try {
+            showLoading(true);
+            const res = await fetch(API_URL + "?type=QuanLyLenh");
+            window.globalDataLenh = await res.json();
+            showLoading(false);
+        } catch (e) {
+            console.error("Lỗi tải dữ liệu lệnh:", e);
+            showLoading(false);
+            return false;
+        }
+    }
+
+    // Quét đối chiếu với cột Booking ID từ QL. Lệnh
+    return window.globalDataLenh.some(row => {
+        const idRaw = row["Booking ID"] || row["Booking id"] || row["Booking ID "] || '';
+        return idRaw.toString().trim().toLowerCase() === cleanInput;
+    });
+}
