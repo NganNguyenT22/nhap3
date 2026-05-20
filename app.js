@@ -599,7 +599,19 @@ function openEirModal(mode, rowIndex = null) {
 
 async function saveEirData() {
     const rowIndex = document.getElementById('eir_rowIndex').value;
-    
+    // 1. LẤY SỐ BOOKING VÀ KIỂM TRA TRƯỚC KHI LƯU
+    const bookingGhiNhan = document.getElementById('eir_booking').value.trim();
+    if (!bookingGhiNhan) {
+        alert("Vui lòng nhập số Booking!");
+        return;
+    }
+
+    const isBookingDung = await checkBookingHopLe(bookingGhiNhan);
+    if (!isBookingDung) {
+        alert("Nhập sai! Số Booking không tồn tại trong hệ thống QL. Lệnh.");
+        return; // Chặn lưu dữ liệu
+    }
+    //ktra booking
     // Mảng dữ liệu bốc từ form xếp đúng thứ tự cột tiêu đề của Google Sheets
     const rowData = [
         "", // Cột STT tự động bỏ qua để tính sau hoặc để trống
@@ -837,7 +849,19 @@ function openEirCapModal(mode, rowIndex = null) {
 // Lưu phiếu Cấp Rỗng về Google Sheets
 async function saveEirCapData() {
     const rowIndex = document.getElementById('eirCap_rowIndex').value;
-    
+    // 1. LẤY SỐ BOOKING VÀ KIỂM TRA TRƯỚC KHI LƯU
+    const bookingGhiNhan = document.getElementById('eirCap_booking').value.trim();
+    if (!bookingGhiNhan) {
+        alert("Vui lòng nhập số Booking!");
+        return;
+    }
+
+    const isBookingDung = await checkBookingHopLe(bookingGhiNhan);
+    if (!isBookingDung) {
+        alert("Nhập sai! Số Booking không tồn tại trong hệ thống QL. Lệnh.");
+        return; // Chặn lưu dữ liệu
+    }
+    //ktra số booking
     const rowValues = [
         "", // Cột STT tự sinh trên sheet
         document.getElementById('eirCap_macont').value.trim().toUpperCase(),
