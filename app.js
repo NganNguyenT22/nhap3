@@ -644,19 +644,39 @@ async function saveEirData() {
 
     showLoading(true);
     try {
-        await fetch(API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify(payload) });
-      
+        // 1. Gửi lệnh lưu lên Google Sheets (Không cần đợi phản hồi ngay để tránh treo)
+        fetch(API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify(payload) });
+
+        // 2. CẬP NHẬT GIAO DIỆN NGAY LẬP TỨC (Optimistic UI)
+        // Tạo một object giả lập dữ liệu mới dựa trên thông tin bạn vừa nhập
+        const newDataRow = {
+            "Mã container": document.getElementById('eir_macont').value.trim().toUpperCase(),
+            "Size": document.getElementById('eir_size').value,
+            "Hãng tàu": document.getElementById('eir_hangtau').value.trim(),
+            "Trạng thái": document.getElementById('eir_trangthai').value,
+            "rowIndex": "temp_" + Date.now() // ID tạm thời
+        };
+
+        // Thêm vào danh sách hiện tại của web
+        window.globalHaRongData.unshift(newDataRow); 
+        
+        // Vẽ lại bảng ngay mà không chờ tải lại từ Sheets
+        renderTableHaRong(window.globalHaRongData);
+
+        // 3. Đóng modal và thông báo
         eirModal.hide();
+        alert("Lưu phiếu EIR Hạ Rỗng thành công!");
+        showLoading(false);
+
+        // 4. (Tùy chọn) Sau 2 giây, tự động tải lại dữ liệu thật từ Sheets để đồng bộ chính xác
         setTimeout(() => {
-            alert("Lưu phiếu EIR Hạ Rỗng thành công!");
-            switchGiaoNhanTab('HaRong'); // Gọi đúng tên hàm để tải lại dữ liệu bảng
-            showLoading(false); // Đảm bảo chắc chắn vòng quay bị tắt
-        }, 500); // Giảm thời gian chờ từ 1200ms xuống 500ms cho người dùng đỡ đợi
+            loadGiaoNhanDataExplicit('ContNhap');
+        }, 2000);
+
     } catch(e) {
         alert("Lỗi kết nối khi lưu phiếu EIR!");
         showLoading(false);
     }
-}
 
 function viewDetailCont(rowIndex) {
     const rowData = window.globalHaRongData.find(r => r.rowIndex === rowIndex);
