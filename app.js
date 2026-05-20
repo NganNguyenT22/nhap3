@@ -653,7 +653,10 @@ async function saveEirData() {
             "Trạng thái": document.getElementById('eir_trangthai').value,
             "rowIndex": "New" // Đánh dấu tạm
         };
-        window.globalHaRongData.unshift(newRow); // Thêm vào đầu bảng
+        // Thêm dòng mới vào đầu mảng dữ liệu hiện tại
+        if (!window.globalHaRongData) window.globalHaRongData = [];
+        window.globalHaRongData.unshift(dataRow);
+        // BƯỚC 2: Vẽ lại bảng ngay lập tức
         renderTableHaRong(window.globalHaRongData); // Vẽ lại bảng ngay
       
         eirModal.hide();
