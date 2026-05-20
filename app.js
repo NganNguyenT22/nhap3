@@ -599,8 +599,6 @@ function openEirModal(mode, rowIndex = null) {
 
 async function saveEirData() {
     const rowIndex = document.getElementById('eir_rowIndex').value;
-   async function saveEirData() {
-    const rowIndex = document.getElementById('eir_rowIndex').value;
     
     // 1. KIỂM TRA ĐỐI CHIẾU BOOKING & HÃNG TÀU
     const bookingGhiNhan = document.getElementById('eir_booking').value.trim();
